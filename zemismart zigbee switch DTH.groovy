@@ -60,16 +60,19 @@ metadata {
                 attributeState "turningOff", label: '${name}', action: "switch.on", icon: "st.switches.light.off", backgroundColor: "#ffffff", nextState: "turningOn"
             }
         }
-        
         standardTile("refresh", "device.refresh", inactiveLabel: false, decoration: "flat", width: 2, height: 2) {
             state "default", label: "", action: "refresh.refresh", icon: "st.secondary.refresh"
         }
+        main "switch"
+        details(["switch", "refresh"])
     }
 }
 
 def installed() {
-    if (!parent) {
-        log.debug "installed() - parent"
+    log.debug "installed()"
+    if (parent) {
+        setDeviceType("Child Switch Health")
+    } else {
         if (device.getDataValue("model") == "FB56+ZSW1GKJ2.7") {
             setDeviceType("ZigBee Switch")
         } else {
@@ -78,19 +81,13 @@ def installed() {
 
         updateDataValue("onOff", "catchall")
         refresh()
-    } else {
-        log.debug "installed() - child"
-        // This is set to a default value, but it is the responsibility of the parent to set it to a more appropriate number
-        sendEvent(name: "checkInterval", value: 30 * 60, displayed: false, data: [protocol: "zigbee"])
     }
 }
 
 def updated() {
     log.debug "updated()"
-    if (!parent) {
-        updateDataValue("onOff", "catchall")
-        refresh()
-    }
+    updateDataValue("onOff", "catchall")
+    refresh()
 }
 
 def parse(String description) {
@@ -137,7 +134,7 @@ private void createChildDevices() {
     def switchNum = 1
     for (i in endPointMap) {
         switchNum += 1
-        addChildDevice("Zemi Zigbee Switch", "$device.deviceNetworkId:0${i}", device.hubId,
+        addChildDevice("Zemi ZigBee Switch", "$device.deviceNetworkId:0${i}", device.hubId,
                        [completedSetup: true, label: "Zemi ZigBee Switch ${switchNum}", isComponent: false])
     }
 }
@@ -148,20 +145,12 @@ private getChildEndpoint(String dni) {
 
 def on() {
     log.debug("on")
-    if (parent) { 
-        parent.childOn(device.deviceNetworkId)
-    } else {
-        zigbee.on()
-    }
+    zigbee.on()
 }
 
 def off() {
     log.debug("off")
-    if (parent) { 
-        parent.childOff(device.deviceNetworkId)
-    } else {
-        zigbee.off()
-    }
+    zigbee.off()
 }
 
 def childOn(String dni) {
@@ -180,33 +169,24 @@ def childOff(String dni) {
  * PING is used by Device-Watch in attempt to reach the Device
  * */
 def ping() {
-    if (!parent) return refresh()
-}
-
-def uninstalled() {
-    parent?.delete()
+    return refresh()
 }
 
 def refresh() {
-	log.debug "refresh()"
-    if (!parent) {
-        def cmds = zigbee.onOffRefresh()
-        def x = getChildCount()
+    def cmds = zigbee.onOffRefresh()
+    def x = getChildCount()
 
-        def endPointMap = 2..x
+    def endPointMap = 2..x
 
-        if (x == 2 && device.getDataValue("model") == "FNB56-ZSW02LX2.0") {
-            endPointMap = [0x0C]
-        }
-
-        for (i in endPointMap) {
-            cmds += zigbee.readAttribute(zigbee.ONOFF_CLUSTER, 0x0000, [destEndpoint: i])
-        }
-
-        return cmds
-    } else {
-    	parent.refresh()
+    if (x == 2 && device.getDataValue("model") == "FNB56-ZSW02LX2.0") {
+        endPointMap = [0x0C]
     }
+
+    for (i in endPointMap) {
+        cmds += zigbee.readAttribute(zigbee.ONOFF_CLUSTER, 0x0000, [destEndpoint: i])
+    }
+
+    return cmds
 }
 
 def poll() {
@@ -214,52 +194,46 @@ def poll() {
 }
 
 def healthPoll() {
-    if (!parent) {
-        log.debug "healthPoll()"
-        def cmds = refresh()
-        cmds.each { sendHubCommand(new physicalgraph.device.HubAction(it)) }
-    }
+    log.debug "healthPoll()"
+    def cmds = refresh()
+    cmds.each { sendHubCommand(new physicalgraph.device.HubAction(it)) }
 }
 
 def configureHealthCheck() {
-    if (!parent) {
-        Integer hcIntervalMinutes = 12
-        if (!state.hasConfiguredHealthCheck) {
-            log.debug "Configuring Health Check, Reporting"
-            unschedule("healthPoll")
-            runEvery5Minutes("healthPoll")
-            def healthEvent = [name: "checkInterval", value: hcIntervalMinutes * 60, displayed: false, data: [protocol: "zigbee", hubHardwareId: device.hub.hardwareID]]
-            // Device-Watch allows 2 check-in misses from device
-            sendEvent(healthEvent)
-            childDevices.each {
-                it.sendEvent(healthEvent)
-            }
-            state.hasConfiguredHealthCheck = true
+    Integer hcIntervalMinutes = 12
+    if (!state.hasConfiguredHealthCheck) {
+        log.debug "Configuring Health Check, Reporting"
+        unschedule("healthPoll")
+        runEvery5Minutes("healthPoll")
+        def healthEvent = [name: "checkInterval", value: hcIntervalMinutes * 60, displayed: false, data: [protocol: "zigbee", hubHardwareId: device.hub.hardwareID]]
+        // Device-Watch allows 2 check-in misses from device
+        sendEvent(healthEvent)
+        childDevices.each {
+            it.sendEvent(healthEvent)
         }
+        state.hasConfiguredHealthCheck = true
     }
 }
 
 def configure() {
-    if (!parent) {
-        log.debug "configure()"
-        configureHealthCheck()
+    log.debug "configure()"
+    configureHealthCheck()
 
-        //other devices supported by this DTH in the future
-        def cmds = zigbee.onOffConfig(0, 120)
-        def x = getChildCount()
+    //other devices supported by this DTH in the future
+    def cmds = zigbee.onOffConfig(0, 120)
+    def x = getChildCount()
 
-        def endPointMap = 2..x
+    def endPointMap = 2..x
 
-        if (x == 2 && device.getDataValue("model") == "FNB56-ZSW02LX2.0") {
-            endPointMap = [0x0C]
-        }
-
-        for (i in endPointMap) {
-            cmds += zigbee.configureReporting(zigbee.ONOFF_CLUSTER, 0x0000, 0x10, 0, 120, null, [destEndpoint: i])
-        }
-        cmds += refresh()
-        return cmds
+    if (x == 2 && device.getDataValue("model") == "FNB56-ZSW02LX2.0") {
+        endPointMap = [0x0C]
     }
+
+    for (i in endPointMap) {
+        cmds += zigbee.configureReporting(zigbee.ONOFF_CLUSTER, 0x0000, 0x10, 0, 120, null, [destEndpoint: i])
+    }
+    cmds += refresh()
+    return cmds
 }
 
 private getChildCount() {
