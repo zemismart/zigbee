@@ -26,7 +26,7 @@ public static String version() { return "v0.0.2.20200426" }
 import java.lang.Math
 
 metadata {
-    definition(name: "Zemi ZigBee Switch", namespace: "zemismart", author: "Onaldo", ocfDeviceType: "oic.d.switch", vid: "generic-switch") {
+    definition(name: "Zemi ZigBee Switch (Touch)", namespace: "zemismart", author: "Onaldo", ocfDeviceType: "oic.d.switch", vid: "generic-switch") {
         capability "Actuator"
         capability "Configuration"
         capability "Refresh"
