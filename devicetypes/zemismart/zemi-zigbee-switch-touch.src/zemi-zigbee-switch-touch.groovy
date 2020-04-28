@@ -26,7 +26,7 @@ public static String version() { return "v0.0.2.20200426" }
 import java.lang.Math
 
 metadata {
-    definition(name: "Zemi ZigBee Switch (Touch)", namespace: "zemismart", author: "Onaldo", ocfDeviceType: "oic.d.switch", vid: "generic-switch") {
+    definition(name: "Zemi ZigBee Switch (Touch)", namespace: "zemismart", author: "Onaldo", ocfDeviceType: "oic.d.light", vid: "generic-switch") {
         capability "Actuator"
         capability "Configuration"
         capability "Refresh"
@@ -37,17 +37,21 @@ metadata {
         command "childOff", ["string"]
 
         // Zemi ZigBee Multi Switch
-        fingerprint endpointId: "10", profileId: "0104", inClusters: "0000, 0003, 0004, 0005, 0006", manufacturer: "Feibit Inc co.", model: "FB56+ZSW1GKJ2.7", deviceJoinName: "Zemi Zigbee Switch"
-        fingerprint endpointId: "10", profileId: "0104", deviceId: "0002", inClusters: "0000, 0005, 0004, 0006", outClusters: "0000", manufacturer: "Feibit Inc co.", model: "FB56+ZSW1HKJ2.5", deviceJoinName: "Zemi Zigbee Switch 1"
-        fingerprint endpointId: "10", profileId: "0104", deviceId: "0002", inClusters: "0000, 0003, 0004, 0005, 0006", manufacturer: "Feibit Inc co.", model: "FB56+ZSW1IKJ2.7", deviceJoinName: "Zemi Zigbee Switch 1"
-        fingerprint endpointId: "0B", profileId: "C05E", inClusters: "0000, 0004, 0003, 0006, 0005, 1000, 0008", outClusters: "0019", manufacturer: "FeiBit", model: "FNB56-ZSW02LX2.0", deviceJoinName: "Zemi Zigbee Switch 1"
-        fingerprint endpointId: "01", profileId: "C05E", inClusters: "0000, 0004, 0003, 0006, 0005, 1000, 0008", outClusters: "0019", manufacturer: "FeiBit", model: "FNB56-ZSW03LX2.0", deviceJoinName: "Zemi Zigbee Switch 1"
+        fingerprint profileId: "0104", deviceId: "0002", inClusters: "0000, 0003, 0004, 0005, 0006", manufacturer: "Feibit Inc co.", model: "FB56+ZSW1GKJ2.5", deviceJoinName: "Zemi Zigbee Switch"
+        fingerprint profileId: "0104", deviceId: "0002", inClusters: "0000, 0004, 0005, 0006", outClusters: "0000", manufacturer: "Feibit Inc co.", model: "FB56+ZSW1HKJ2.5", deviceJoinName: "Zemi Zigbee Switch 1"
+        fingerprint profileId: "0104", deviceId: "0002", inClusters: "0000, 0003, 0004, 0005, 0006", manufacturer: "Feibit Inc co.", model: "FB56+ZSW1IKJ2.5", deviceJoinName: "Zemi Zigbee Switch 1"
+
+        fingerprint profileId: "0104", deviceId: "0002", inClusters: "0000, 0003, 0004, 0005, 0006", manufacturer: "Feibit Inc co.", model: "FB56+ZSW1GKJ2.7", deviceJoinName: "Zemi Zigbee Switch"
+        fingerprint profileId: "0104", deviceId: "0002", inClusters: "0000, 0004, 0005, 0006", outClusters: "0000", manufacturer: "Feibit Inc co.", model: "FB56+ZSW1HKJ2.7", deviceJoinName: "Zemi Zigbee Switch 1"
+        fingerprint profileId: "0104", deviceId: "0002", inClusters: "0000, 0003, 0004, 0005, 0006", manufacturer: "Feibit Inc co.", model: "FB56+ZSW1IKJ2.7", deviceJoinName: "Zemi Zigbee Switch 1"
 
         fingerprint profileId: "C05E", deviceId: "0000", inClusters: "0000, 0003, 0004, 0005, 0006, 0008, 1000", outClusters: "0019", manufacturer: "FeiBit", model: "FNB56-ZSW01LX2.0", deviceJoinName: "Zemi Zigbee Switch"
+        fingerprint profileId: "C05E", deviceId: "0000", inClusters: "0000, 0003, 0004, 0005, 0006, 0008, 1000", outClusters: "0019", manufacturer: "FeiBit", model: "FNB56-ZSW02LX2.0", deviceJoinName: "Zemi Zigbee Switch 1"
+        fingerprint profileId: "C05E", deviceId: "0000", inClusters: "0000, 0003, 0004, 0005, 0006, 0008, 1000", outClusters: "0019", manufacturer: "FeiBit", model: "FNB56-ZSW03LX2.0", deviceJoinName: "Zemi Zigbee Switch 1"
 
-        fingerprint profileId: "C05E", inClusters: "0000, 0003, 0004, 0005, 0006, 0008, 1000", outClusters: "0019", manufacturer: "3A Smart Home DE", model: "LXN-1S27LX1.0", deviceJoinName: "Zemi Zigbee Switch"
-        fingerprint profileId: "C05E", inClusters: "0000, 0003, 0004, 0005, 0006, 0008, 1000", outClusters: "0019", manufacturer: "3A Smart Home DE", model: "LXN-2S27LX1.0", deviceJoinName: "Zemi Zigbee Switch 1"
-        fingerprint profileId: "C05E", inClusters: "0000, 0003, 0004, 0005, 0006, 0008, 1000", outClusters: "0019", manufacturer: "3A Smart Home DE", model: "LXN-3S27LX1.0", deviceJoinName: "Zemi Zigbee Switch 1"
+        fingerprint profileId: "C05E", deviceId: "0000", inClusters: "0000, 0003, 0004, 0005, 0006, 0008, 1000", outClusters: "0019", manufacturer: "3A Smart Home DE", model: "LXN-1S27LX1.0", deviceJoinName: "Zemi Zigbee Switch"
+        fingerprint profileId: "C05E", deviceId: "0000", inClusters: "0000, 0003, 0004, 0005, 0006, 0008, 1000", outClusters: "0019", manufacturer: "3A Smart Home DE", model: "LXN-2S27LX1.0", deviceJoinName: "Zemi Zigbee Switch 1"
+        fingerprint profileId: "C05E", deviceId: "0000", inClusters: "0000, 0003, 0004, 0005, 0006, 0008, 1000", outClusters: "0019", manufacturer: "3A Smart Home DE", model: "LXN-3S27LX1.0", deviceJoinName: "Zemi Zigbee Switch 1"
     }
 
     preferences {
@@ -88,11 +92,7 @@ def installed() {
     if (endpointCount == 1) {
         // for 1 gang switch - ST Official local dth
         setDeviceType("ZigBee Switch")
-    } else if (endpointCount > 1){
-        def model = device.getDataValue("model")
-        if (model == 'FB56+ZSW1HKJ2.5' || model == 'FB56+ZSW1IKJ2.7') {
-            device.updateDataValue("endpointId", "10")
-        }
+    } else if (endpointCount > 1) {
         // for multi switch, cloud device
         createChildDevices()
     }
@@ -119,7 +119,7 @@ def parse(String description) {
     }
 
     if (eventMap) {
-        def endpointId = device.getDataValue("endpointId")
+        def endpointId = zigbee.endpointId
         log.debug "eventMap $eventMap | eventDescMap $eventDescMap"
 
         if (eventDescMap?.sourceEndpoint == endpointId) {
@@ -152,21 +152,23 @@ private getEndpointCount() {
         case 'FNB56-ZSW01LX2.0' : return 1
         case 'FNB56-ZSW02LX2.0' : return 2
         case 'FNB56-ZSW03LX2.0' : return 3
-        case 'FB56+ZSW1GKJ2.7'  : return 1
+        case 'FB56+ZSW1GKJ2.5'  : return 1
         case 'FB56+ZSW1HKJ2.5'  : return 2
+        case 'FB56+ZSW1IKJ2.5'  : return 3
+        case 'FB56+ZSW1GKJ2.7'  : return 1
+        case 'FB56+ZSW1HKJ2.7'  : return 2
         case 'FB56+ZSW1IKJ2.7'  : return 3
         case 'LXN-1S27LX1.0'    : return 1
         case 'LXN-2S27LX1.0'    : return 2
         case 'LXN-3S27LX1.0'    : return 3
-        default : return 0
+        default                 : return 0
     }
 }
 
 private void createChildDevices() {
     log.debug("createChildDevices of $device.deviceNetworkId")
     def endpointCount = getEndpointCount()
-    def endpointId = device.getDataValue("endpointId")
-    def endpointInt = zigbee.convertHexToInt(endpointId)
+    def endpointInt = zigbee.convertHexToInt(zigbee.endpointId)
     def deviceLabel = "${device.displayName[0..-2]}"
 
     for (i in 1..endpointCount - 1) {
@@ -228,8 +230,7 @@ def refresh() {
     def endpointCount = getEndpointCount()
 
     if (endpointCount > 1) {
-        def endpointId = device.getDataValue("endpointId")
-        def endpointInt = zigbee.convertHexToInt(endpointId)
+        def endpointInt = zigbee.convertHexToInt(zigbee.endpointId)
 
         for (i in 1..endpointCount - 1) {
             def endpointValue = endpointInt + i
@@ -277,8 +278,7 @@ def configure() {
     def endpointCount = getEndpointCount()
 
     if (endpointCount > 1) {
-        def endpointId = device.getDataValue("endpointId")
-        def endpointInt = zigbee.convertHexToInt(endpointId)
+        def endpointInt = zigbee.convertHexToInt(zigbee.endpointId)
 
         for (i in 1..endpointCount - 1) {
             def endpointValue = endpointInt + i
