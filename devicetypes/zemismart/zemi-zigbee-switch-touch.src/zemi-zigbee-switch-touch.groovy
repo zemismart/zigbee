@@ -26,7 +26,7 @@ public static String version() { return "v0.0.2.20200426" }
 import java.lang.Math
 
 metadata {
-    definition(name: "Zemi ZigBee Switch (Touch)", namespace: "zemismart", author: "Onaldo", ocfDeviceType: "oic.d.light", vid: "generic-switch") {
+    definition(name: "Zemi ZigBee Switch (Touch)", namespace: "zemismart", author: "Onaldo", ocfDeviceType: "oic.d.light", vid: "generic-switch", genericHandler: "ZLL") {
         capability "Actuator"
         capability "Configuration"
         capability "Refresh"
@@ -119,10 +119,11 @@ def parse(String description) {
     }
 
     if (eventMap) {
-        def endpointId = zigbee.endpointId
+        def endpointId = zigbee.endpointId as Integer
+        def childEndpointInt = zigbee.convertHexToInt(eventDescMap?.sourceEndpoint)
         log.debug "eventMap $eventMap | eventDescMap $eventDescMap"
 
-        if (eventDescMap?.sourceEndpoint == endpointId) {
+        if (childEndpointInt == endpointId) {
             log.debug "parse - sendEvent parent $eventDescMap.sourceEndpoint"
             sendEvent(eventMap)
         } else {
@@ -134,11 +135,9 @@ def parse(String description) {
                 childDevice.sendEvent(eventMap)
             } else {
                 log.debug "Child device: $device.deviceNetworkId:${eventDescMap.sourceEndpoint} was not found"
-                def parentEndpointInt = zigbee.convertHexToInt(endpointId)
-                def childEndpointInt = zigbee.convertHexToInt(eventDescMap?.sourceEndpoint)
                 def childEndpointHexString = zigbee.convertToHexString(childEndpointInt, 2).toUpperCase()
                 def deviceLabel = "${device.displayName[0..-2]}"
-                def deviceIndex = Math.abs(childEndpointInt - parentEndpointInt) + 1
+                def deviceIndex = Math.abs(childEndpointInt - endpointId) + 1
                 createChildDevice("$deviceLabel$deviceIndex", childEndpointHexString)
             }
         }
@@ -168,7 +167,7 @@ private getEndpointCount() {
 private void createChildDevices() {
     log.debug("createChildDevices of $device.deviceNetworkId")
     def endpointCount = getEndpointCount()
-    def endpointInt = zigbee.convertHexToInt(zigbee.endpointId)
+    def endpointInt = zigbee.endpointId as Integer
     def deviceLabel = "${device.displayName[0..-2]}"
 
     for (i in 1..endpointCount - 1) {
@@ -230,11 +229,10 @@ def refresh() {
     def endpointCount = getEndpointCount()
 
     if (endpointCount > 1) {
-        def endpointInt = zigbee.convertHexToInt(zigbee.endpointId)
+        def endpointInt = zigbee.endpointId as Integer
 
         for (i in 1..endpointCount - 1) {
-            def endpointValue = endpointInt + i
-            cmds += zigbee.readAttribute(zigbee.ONOFF_CLUSTER, 0x0000, [destEndpoint: endpointValue])
+            cmds += zigbee.readAttribute(zigbee.ONOFF_CLUSTER, 0x0000, [destEndpoint: endpointInt + i])
         }
     } else {
         cmds += zigbee.readAttribute(zigbee.ONOFF_CLUSTER, 0x0000, [destEndpoint: 0xFF])
@@ -281,8 +279,7 @@ def configure() {
         def endpointInt = zigbee.convertHexToInt(zigbee.endpointId)
 
         for (i in 1..endpointCount - 1) {
-            def endpointValue = endpointInt + i
-            cmds += zigbee.configureReporting(zigbee.ONOFF_CLUSTER, 0x0000, 0x10, 0, 120, null, [destEndpoint: endpointValue])
+            cmds += zigbee.configureReporting(zigbee.ONOFF_CLUSTER, 0x0000, 0x10, 0, 120, null, [destEndpoint: endpointInt + i])
         }
     } else {
         cmds += zigbee.configureReporting(zigbee.ONOFF_CLUSTER, 0x0000, 0x10, 0, 120, null, [destEndpoint: 0xFF])
