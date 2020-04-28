@@ -42,6 +42,12 @@ metadata {
         fingerprint endpointId: "10", profileId: "0104", deviceId: "0002", inClusters: "0000, 0003, 0004, 0005, 0006", manufacturer: "Feibit Inc co.", model: "FB56+ZSW1IKJ2.7", deviceJoinName: "Zemi Zigbee Switch 1"
         fingerprint endpointId: "0B", profileId: "C05E", inClusters: "0000, 0004, 0003, 0006, 0005, 1000, 0008", outClusters: "0019", manufacturer: "FeiBit", model: "FNB56-ZSW02LX2.0", deviceJoinName: "Zemi Zigbee Switch 1"
         fingerprint endpointId: "01", profileId: "C05E", inClusters: "0000, 0004, 0003, 0006, 0005, 1000, 0008", outClusters: "0019", manufacturer: "FeiBit", model: "FNB56-ZSW03LX2.0", deviceJoinName: "Zemi Zigbee Switch 1"
+
+        fingerprint profileId: "C05E", deviceId: "0000", inClusters: "0000, 0003, 0004, 0005, 0006, 0008, 1000", outClusters: "0019", manufacturer: "FeiBit", model: "FNB56-ZSW01LX2.0", deviceJoinName: "Zemi Zigbee Switch"
+
+        fingerprint profileId: "C05E", inClusters: "0000, 0003, 0004, 0005, 0006, 0008, 1000", outClusters: "0019", manufacturer: "3A Smart Home DE", model: "LXN-1S27LX1.0", deviceJoinName: "Zemi Zigbee Switch"
+        fingerprint profileId: "C05E", inClusters: "0000, 0003, 0004, 0005, 0006, 0008, 1000", outClusters: "0019", manufacturer: "3A Smart Home DE", model: "LXN-2S27LX1.0", deviceJoinName: "Zemi Zigbee Switch 1"
+        fingerprint profileId: "C05E", inClusters: "0000, 0003, 0004, 0005, 0006, 0008, 1000", outClusters: "0019", manufacturer: "3A Smart Home DE", model: "LXN-3S27LX1.0", deviceJoinName: "Zemi Zigbee Switch 1"
     }
 
     preferences {
@@ -143,11 +149,15 @@ private getEndpointCount() {
     def model = device.getDataValue("model")
 
     switch (model) {
+        case 'FNB56-ZSW01LX2.0' : return 1
         case 'FNB56-ZSW02LX2.0' : return 2
         case 'FNB56-ZSW03LX2.0' : return 3
-        case 'FB56+ZSW1GKJ2.7' : return 1
-        case 'FB56+ZSW1HKJ2.5' : return 2
-        case 'FB56+ZSW1IKJ2.7' : return 3
+        case 'FB56+ZSW1GKJ2.7'  : return 1
+        case 'FB56+ZSW1HKJ2.5'  : return 2
+        case 'FB56+ZSW1IKJ2.7'  : return 3
+        case 'LXN-1S27LX1.0'    : return 1
+        case 'LXN-2S27LX1.0'    : return 2
+        case 'LXN-3S27LX1.0'    : return 3
         default : return 0
     }
 }
