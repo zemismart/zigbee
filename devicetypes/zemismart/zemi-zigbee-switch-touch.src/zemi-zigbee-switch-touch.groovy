@@ -126,7 +126,7 @@ def parse(String description) {
         def endpointId = device.getDataValue("endpointId")
         log.debug "eventMap $eventMap | eventDescMap $eventDescMap"
 
-        if (childEndpointInt == endpointId) {
+        if (eventDescMap?.sourceEndpoint == endpointId) {
             log.debug "parse - sendEvent parent $eventDescMap.sourceEndpoint"
             sendEvent(eventMap)
         } else {
@@ -295,4 +295,3 @@ def configure() {
     cmds += refresh()
     return cmds
 }
-
