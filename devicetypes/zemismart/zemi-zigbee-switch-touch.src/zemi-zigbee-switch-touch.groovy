@@ -93,6 +93,10 @@ def installed() {
         // for 1 gang switch - ST Official local dth
         setDeviceType("ZigBee Switch")
     } else if (endpointCount > 1) {
+        def model = device.getDataValue("model")
+        if (model == 'FB56+ZSW1HKJ2.5' || model == 'FB56+ZSW1IKJ2.7') {
+            device.updateDataValue("endpointId", "10")
+        }
         // for multi switch, cloud device
         createChildDevices()
     }
@@ -119,8 +123,7 @@ def parse(String description) {
     }
 
     if (eventMap) {
-        def endpointId = zigbee.endpointId as Integer
-        def childEndpointInt = zigbee.convertHexToInt(eventDescMap?.sourceEndpoint)
+        def endpointId = device.getDataValue("endpointId")
         log.debug "eventMap $eventMap | eventDescMap $eventDescMap"
 
         if (childEndpointInt == endpointId) {
@@ -135,9 +138,11 @@ def parse(String description) {
                 childDevice.sendEvent(eventMap)
             } else {
                 log.debug "Child device: $device.deviceNetworkId:${eventDescMap.sourceEndpoint} was not found"
+                def parentEndpointInt = zigbee.convertHexToInt(endpointId)
+                def childEndpointInt = zigbee.convertHexToInt(eventDescMap?.sourceEndpoint)
                 def childEndpointHexString = zigbee.convertToHexString(childEndpointInt, 2).toUpperCase()
                 def deviceLabel = "${device.displayName[0..-2]}"
-                def deviceIndex = Math.abs(childEndpointInt - endpointId) + 1
+                def deviceIndex = Math.abs(childEndpointInt - parentEndpointInt) + 1
                 createChildDevice("$deviceLabel$deviceIndex", childEndpointHexString)
             }
         }
@@ -167,7 +172,8 @@ private getEndpointCount() {
 private void createChildDevices() {
     log.debug("createChildDevices of $device.deviceNetworkId")
     def endpointCount = getEndpointCount()
-    def endpointInt = zigbee.endpointId as Integer
+    def endpointId = device.getDataValue("endpointId")
+    def endpointInt = zigbee.convertHexToInt(endpointId)
     def deviceLabel = "${device.displayName[0..-2]}"
 
     for (i in 1..endpointCount - 1) {
@@ -229,7 +235,8 @@ def refresh() {
     def endpointCount = getEndpointCount()
 
     if (endpointCount > 1) {
-        def endpointInt = zigbee.endpointId as Integer
+        def endpointId = device.getDataValue("endpointId")
+        def endpointInt = zigbee.convertHexToInt(endpointId)
 
         for (i in 1..endpointCount - 1) {
             cmds += zigbee.readAttribute(zigbee.ONOFF_CLUSTER, 0x0000, [destEndpoint: endpointInt + i])
@@ -276,7 +283,8 @@ def configure() {
     def endpointCount = getEndpointCount()
 
     if (endpointCount > 1) {
-        def endpointInt = zigbee.convertHexToInt(zigbee.endpointId)
+        def endpointId = device.getDataValue("endpointId")
+        def endpointInt = zigbee.convertHexToInt(endpointId)
 
         for (i in 1..endpointCount - 1) {
             cmds += zigbee.configureReporting(zigbee.ONOFF_CLUSTER, 0x0000, 0x10, 0, 120, null, [destEndpoint: endpointInt + i])
@@ -287,3 +295,4 @@ def configure() {
     cmds += refresh()
     return cmds
 }
+
