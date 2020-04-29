@@ -86,6 +86,16 @@ metadata {
     }
 }
 
+def isUnexpectedEndpoint(String model) {
+    switch (model) {
+        case 'FB56+ZSW1HKJ2.5':
+        case 'FB56+ZSW1IKJ2.5':
+        case 'FB56+ZSW1HKJ2.7':
+        case 'FB56+ZSW1IKJ2.7': return true
+        default               : return false
+    }
+}
+
 def installed() {
     log.debug "installed()"
     def endpointCount = getEndpointCount()
@@ -94,7 +104,7 @@ def installed() {
         setDeviceType("ZigBee Switch")
     } else if (endpointCount > 1) {
         def model = device.getDataValue("model")
-        if (model == 'FB56+ZSW1HKJ2.5' || model == 'FB56+ZSW1IKJ2.7') {
+        if (isUnexpectedEndpoint(model)) {
             device.updateDataValue("endpointId", "10")
         }
         // for multi switch, cloud device
